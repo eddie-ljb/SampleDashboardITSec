@@ -1,13 +1,19 @@
 services:
-    itsec-sample:
-        image: nginx:alpine
-        container_name: itsec-sample
-        restart: unless-stopped
+    angular-dev:
+        container_name: angular-dev
+        image: node:20
+        working_dir: /usr/src/app
+        volumes:
+            - ./:/usr/src/app
+            - /usr/src/app/node_modules
         ports:
-            - "4202:80"
+            - "4202:4200"
+        command: sh -c "npm install && npm start"
+        environment:
+            - CHOKIDAR_USEPOLLING=true
         networks:
-            - itsec-sample-net
+            - angular-net
 
 networks:
-    itsec-sample-net:
+    angular-net:
         driver: bridge
