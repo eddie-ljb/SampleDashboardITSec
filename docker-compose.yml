@@ -1,6 +1,19 @@
+version: "3.8"
+
 services:
-    itsec-sample:
-        build: .
+    sakai-ng:
+        container_name: sakai-ng
+        build:
+            context: .
+            dockerfile: Dockerfile
         ports:
-            - "4202:80"
+            - "8071:80"
         restart: unless-stopped
+        environment:
+            - NODE_ENV=production
+        networks:
+            - sakai-net
+
+networks:
+    sakai-net:
+        driver: bridge

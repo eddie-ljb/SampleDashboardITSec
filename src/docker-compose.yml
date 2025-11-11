@@ -1,6 +1,0 @@
-services:
-    itsec-sample:
-        build: .
-        ports:
-            - "4202:80"
-        restart: unless-stopped
