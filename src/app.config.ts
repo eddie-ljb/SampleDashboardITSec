@@ -5,12 +5,17 @@ import { provideRouter, withEnabledBlockingInitialNavigation, withInMemoryScroll
 import Aura from '@primeuix/themes/aura';
 import { providePrimeNG } from 'primeng/config';
 import { appRoutes } from './app.routes';
+import { provideGoogleAnalytics, provideGoogleAnalyticsRouter } from '@hakimio/ngx-google-analytics';
 
 export const appConfig: ApplicationConfig = {
     providers: [
         provideRouter(appRoutes, withInMemoryScrolling({ anchorScrolling: 'enabled', scrollPositionRestoration: 'enabled' }), withEnabledBlockingInitialNavigation()),
         provideHttpClient(withFetch()),
         provideAnimationsAsync(),
-        providePrimeNG({ theme: { preset: Aura, options: { darkModeSelector: '.app-dark' } } })
+        providePrimeNG({ theme: { preset: Aura, options: { darkModeSelector: '.app-dark' } } }),
+        provideGoogleAnalytics('G-KR1H528VQ8'),
+        provideGoogleAnalyticsRouter({
+            include: ['/auth/login', '/auth/access', '/landing', '/'],
+        })
     ]
 };
