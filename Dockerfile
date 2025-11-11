@@ -1,28 +1,34 @@
 # ===============================
 # STAGE 1 — Build Angular App
 # ===============================
-FROM node:20-alpine AS build
+FROM node:20 AS build
 
 WORKDIR /app
 
-# 1. Nur package-Dateien kopieren
+# System-Tools für native Module
+RUN apt-get update && apt-get install -y python3 g++ make && rm -rf /var/lib/apt/lists/*
+
+# Paketdateien kopieren
 COPY package*.json ./
 
-# 2. Dependencies installieren (sicherer als mit global Angular CLI)
-RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
+# Sicheres Dependency-Install
+RUN npm install
 
-# 3. Quellcode kopieren
+# Quellcode kopieren
 COPY . .
 
-# 4. Angular App bauen
-RUN npx ng build --configuration production
+# Angular-Build (lokale CLI wird automatisch verwendet)
+RUN npm run build -- --configuration production
 
 # ===============================
 # STAGE 2 — Serve mit Nginx
 # ===============================
 FROM nginx:1.27-alpine
 
-# Build-Ergebnis kopieren
+# Default-HTML löschen
+RUN rm -rf /usr/share/nginx/html/*
+
+# Build-Output kopieren
 COPY --from=build /app/dist/sakai-ng/browser /usr/share/nginx/html
 
 # Eigene Nginx-Konfiguration
