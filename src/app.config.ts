@@ -16,6 +16,7 @@ export const appConfig: ApplicationConfig = {
         provideGoogleAnalytics('G-KR1H528VQ8'),
         provideGoogleAnalyticsRouter({
             include: ['/auth/login', '/auth/access', '/landing', '/'],
-        })
+        }),
+        {provide: 'googleTagManagerId', useValue: 'GTM-5PNS7F92'}
     ]
 };
