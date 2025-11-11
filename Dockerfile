@@ -5,28 +5,27 @@ FROM node:20-alpine AS build
 
 WORKDIR /app
 
-# Paketdateien kopieren und Abhängigkeiten installieren
+# 1. Nur package-Dateien kopieren
 COPY package*.json ./
-RUN npm install -g @angular/cli && npm ci
 
-# Projektdateien kopieren
+# 2. Dependencies installieren (sicherer als mit global Angular CLI)
+RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
+
+# 3. Quellcode kopieren
 COPY . .
 
-# Angular App bauen (Production)
-RUN npm run build -- --configuration production
+# 4. Angular App bauen
+RUN npx ng build --configuration production
 
 # ===============================
-# STAGE 2 — Run Nginx
+# STAGE 2 — Serve mit Nginx
 # ===============================
 FROM nginx:1.27-alpine
 
-# Standardverzeichnis leeren
-RUN rm -rf /usr/share/nginx/html/*
-
-# Angular Build-Ergebnis kopieren
+# Build-Ergebnis kopieren
 COPY --from=build /app/dist/sakai-ng/browser /usr/share/nginx/html
 
-# Eigene Nginx-Konfiguration einspielen
+# Eigene Nginx-Konfiguration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
